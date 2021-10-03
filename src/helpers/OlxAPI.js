@@ -56,6 +56,22 @@ const OlxAPI = {
             {email, password}
         )
         return json
+    },
+
+    register: async (name, email, passoword, stateLoc) => {
+        return apiFetchPost('/user/signup', {
+            name,
+            email,
+            passoword,
+            state: stateLoc,
+        });
+    },
+
+    getStates:async () => {
+        const json = await apiFetchGet(
+            '/states'
+        )
+        return json.states
     }
 
 };
