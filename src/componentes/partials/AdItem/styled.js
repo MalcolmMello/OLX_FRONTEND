@@ -10,7 +10,7 @@ a {
     border-radius:5px;
     color:#000;
     background-color:#FFF;
-    transition: all ease .2s;
+    transition:all ease .2s;
 
     &:hover {
         background-color:#EEE;
@@ -26,4 +26,4 @@ a {
         font-weight:bold;
     }
 }
-`
+`;
