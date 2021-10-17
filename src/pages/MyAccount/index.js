@@ -3,6 +3,7 @@ import { PageArea } from './styled'
 import useAPI from '../../helpers/OlxAPI'
 import { doLogin } from '../../helpers/AuthHandler'
 import {Name, Email, State, Container, Img} from './styled'
+import Modal from "../../componentes/Modal";
 
 import { PageContainter, PageTitle } from '../../componentes/MainComponents'
 
@@ -10,6 +11,7 @@ import { PageContainter, PageTitle } from '../../componentes/MainComponents'
 const Page = () => {
     const api = useAPI()
 
+    const [modalStatus, setModalStatus] = useState(true)
     const[userLogged, setUserLogged] = useState([])
 
     useEffect(()=>{
@@ -68,6 +70,9 @@ const Page = () => {
                     </Container>
                     <button className="Button">Alterar Dados dos Anúncios</button>
                 </PageArea>
+                <Modal status={modalStatus} setStatus={setModalStatus}>
+                    modal
+                </Modal>
         </PageContainter>
     )
 }
