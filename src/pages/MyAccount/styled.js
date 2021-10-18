@@ -70,3 +70,5 @@ export const Img = styled.img`
     height:300px;
     border-radius:5px
 `
+
+export const InputName = styled.input``
