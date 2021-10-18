@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { useHistory } from "react-router";
+import MaskedInput from "react-text-mask"
+import createNumberMask from 'text-mask-addons/dist/createNumberMask'
 import { PageArea } from './styled'
 import useAPI from '../../helpers/OlxAPI'
 import { doLogin } from '../../helpers/AuthHandler'
@@ -11,6 +14,7 @@ import {
     Img
 } from './styled'
 import Modal from "../../componentes/Modal";
+import ModalProdutos from "../../componentes/ModalProdutos";
 
 import { PageContainter, PageTitle } from '../../componentes/MainComponents'
 
@@ -26,8 +30,22 @@ const Page = () => {
     const [error, setError] = useState('')
     const [disabled, setDisabled] = useState(false)
     const [stateList, setStateList] = useState([])
-    const [modalStatus, setModalStatus] = useState(false)
     const[userLogged, setUserLogged] = useState([])
+
+    const fileField = useRef();
+    const history = useHistory();
+
+    const [categories, setCategories] = useState([]);
+
+    const [title, setTitle] = useState('');
+    const [category, setCategory] = useState('');
+    const [price, setPrice] = useState('');
+    const [priceNegotiable, setPriceNegotiable] = useState(false);
+    const [desc, setDesc] = useState('');
+    const [id, setId] = useState('')
+    const [active, setActive] = useState(true)
+    const [modalStatus, setModalStatus] = useState(false)
+    const [modalProductsStatus, setModalProductsStatus] = useState(false)
 
     useEffect(()=>{
         const getUser = async ()=> {
@@ -45,6 +63,14 @@ const Page = () => {
         getStates()
     }, [])
 
+    useEffect(()=>{
+        const getCategories = async ()=> {
+            const cats = await api.getCategories();
+            setCategories(cats);
+        }
+        getCategories();
+    }, []);
+
     const handleSubmit = async (e)=> {
         e.preventDefault()
         setDisabled(true)
@@ -60,6 +86,21 @@ const Page = () => {
 
         setDisabled(false)
     }
+
+    const handleSubmitProduct = async (e)=> {
+        e.preventDefault();
+        setDisabled(true);
+        setError('');
+        const json = await api.changeAd(active, title, category, price, priceNegotiable, desc, fileField)
+    }
+
+    const priceMask = createNumberMask({
+        prefix:'R$ ',
+        includeThousandsSeparator:true,
+        thousandsSeparatorSymbol:'.',
+        allowDecimal:true,
+        decimalSymbol:','
+    });
 
 
     return (
@@ -101,13 +142,20 @@ const Page = () => {
                                             <p>{i.category}</p>
                                             <p className="title">Preço</p>
                                             <p>R$ {i.price.toFixed(2)}</p>
+                                            <p className="title">ID</p>
+                                            <p>{i.id}</p>
                                         </div>
                                     </div>
                                 )}
                             </div>
                         }
                     </Container>
-                    <button className="Button">Alterar Dados dos Anúncios</button>
+                    <button 
+                        className="Button" 
+                        onClick={e=>setModalProductsStatus(true)}
+                    >
+                        Alterar Dados dos Anúncios
+                    </button>
                 </PageArea>
                 <Modal status={modalStatus} setStatus={setModalStatus}>
                     <form onSubmit={handleSubmit}>
@@ -165,6 +213,100 @@ const Page = () => {
                         </label>
                     </form>
                 </Modal>
+                <ModalProdutos status={modalProductsStatus} setStatus={setModalProductsStatus}> 
+                <form onSubmit={handleSubmitProduct}>
+                        <label className="area">
+                            <div className="area--title">Título</div>
+                            <div className="area--input">
+                                <input 
+                                    type="text" 
+                                    disabled={disabled}
+                                    value={name}
+                                    onChange={e=>setName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </label>
+                        <label className="area">
+                            <div className="area--title">Categoria</div>
+                            <div className="area--input">
+                                <select
+                                    disabled={disabled}
+                                    onChange={e=>setCategory(e.target.value)}
+                                    required
+                                >
+                                    <option></option>
+                                    {categories && categories.map(i=>
+                                        <option key={i._id} value={i._id}>{i.name}</option>
+                                    )}
+                                </select>
+                            </div>
+                        </label>
+                        <label className="area">
+                            <div className="area--title">Preço</div>
+                            <div className="area--input">
+                                <MaskedInput
+                                    mask={priceMask}
+                                    placeholder="R$ "
+                                    disabled={disabled || priceNegotiable}
+                                    value={price}
+                                    onChange={e=>setPrice(e.target.value)}
+                                />
+                            </div>
+                        </label>
+                        <label className="area">
+                            <div className="area--title">Preço Negociável</div>
+                            <div className="area--input">
+                                <input
+                                    className="boxx"
+                                    type="checkbox"
+                                    disabled={disabled}
+                                    checked={priceNegotiable}
+                                    onChange={e=>setPriceNegotiable(!priceNegotiable)}
+                                />
+                            </div>
+                        </label>
+                        <label className="area">
+                            <div className="area--title">Descrição</div>
+                            <div className="area--input">
+                                <textarea
+                                    disabled={disabled}
+                                    value={desc}
+                                    onChange={e=>setDesc(e.target.value)}
+                                ></textarea>
+                            </div>
+                        </label>
+                        <label className="area">
+                            <div className="area--title">Imagens (1 ou mais)</div>
+                            <div className="area--input">
+                                <input
+                                    type="file"
+                                    disabled={disabled}
+                                    ref={fileField}
+                                    multiple
+                                />
+                            </div>
+                        </label>
+                        <label className="area">
+                            <div className="area--title">ID do Produto</div>
+                            <div className="area--input">
+                                <input 
+                                    type="text" 
+                                    disabled={disabled}
+                                    value={id}
+                                    onChange={e=>setId(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </label>
+                        <label className="area">
+                            <div className="area--title"></div>
+                            <div className="area--input">
+                                <button disabled={disabled} onClick={handleSubmitProduct}>Adicionar Anúncio</button>
+                            </div>
+                        </label>
+                    </form>
+                </ModalProdutos>
         </PageContainter>
     )
 }

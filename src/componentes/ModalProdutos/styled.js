@@ -34,7 +34,7 @@ export const ModalBody = styled.div`
             max-width:500px;
     
             .area--title {
-                width: 140px;
+                width: 200px;
                 text-align:right;
                 padding-right:20px;
                 font-weight:bold;
