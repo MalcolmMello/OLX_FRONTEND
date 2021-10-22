@@ -1,11 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useHistory } from "react-router";
-import MaskedInput from "react-text-mask"
-import createNumberMask from 'text-mask-addons/dist/createNumberMask'
 import { PageArea } from './styled'
 import useAPI from '../../helpers/OlxAPI'
 import { doLogin } from '../../helpers/AuthHandler'
-import Cookies from "js-cookie";
 import {
     Name,
     Email,
@@ -21,6 +18,8 @@ import { PageContainter, PageTitle } from '../../componentes/MainComponents'
 
 const Page = () => {
     const api = useAPI()
+    const fileField = useRef();
+    const history = useHistory();
 
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
@@ -32,9 +31,6 @@ const Page = () => {
     const [stateList, setStateList] = useState([])
     const[userLogged, setUserLogged] = useState([])
 
-    const fileField = useRef();
-    const history = useHistory();
-
     const [categories, setCategories] = useState([]);
 
     const [title, setTitle] = useState('');
@@ -43,6 +39,8 @@ const Page = () => {
     const [priceNegotiable, setPriceNegotiable] = useState(false);
     const [desc, setDesc] = useState('');
     const [id, setId] = useState('')
+
+
     const [active, setActive] = useState(true)
     const [modalStatus, setModalStatus] = useState(false)
     const [modalProductsStatus, setModalProductsStatus] = useState(false)
@@ -91,17 +89,16 @@ const Page = () => {
         e.preventDefault();
         setDisabled(true);
         setError('');
-        const json = await api.changeAd(active, title, category, price, priceNegotiable, desc, fileField)
+        const pic = []
+        for(let i=0;i<fileField.current.files.length;i++) {
+            pic.push(fileField.current.files[i]);
+        }
+
+        const json = await api.changeAd(active, title, category, price, priceNegotiable, desc, pic, id);
+        
+
+        setDisabled(false);
     }
-
-    const priceMask = createNumberMask({
-        prefix:'R$ ',
-        includeThousandsSeparator:true,
-        thousandsSeparatorSymbol:'.',
-        allowDecimal:true,
-        decimalSymbol:','
-    });
-
 
     return (
         <PageContainter>
@@ -221,8 +218,8 @@ const Page = () => {
                                 <input 
                                     type="text" 
                                     disabled={disabled}
-                                    value={name}
-                                    onChange={e=>setName(e.target.value)}
+                                    value={title}
+                                    onChange={e=>setTitle(e.target.value)}
                                     required
                                 />
                             </div>
@@ -230,23 +227,23 @@ const Page = () => {
                         <label className="area">
                             <div className="area--title">Categoria</div>
                             <div className="area--input">
-                                <select
-                                    disabled={disabled}
-                                    onChange={e=>setCategory(e.target.value)}
-                                    required
-                                >
-                                    <option></option>
-                                    {categories && categories.map(i=>
-                                        <option key={i._id} value={i._id}>{i.name}</option>
-                                    )}
-                                </select>
+                                    <select
+                                        value={category}
+                                        onChange={e=>setCategory(e.target.value)}
+                                        required                                    
+                                    >
+                                        <option></option>
+                                        {categories.map((i, k)=>
+                                            <option key={k} value={i._id}>{i.name}</option>
+                                        )}
+                                    </select>
                             </div>
                         </label>
                         <label className="area">
                             <div className="area--title">Preço</div>
                             <div className="area--input">
-                                <MaskedInput
-                                    mask={priceMask}
+                                <input 
+                                    type="text"
                                     placeholder="R$ "
                                     disabled={disabled || priceNegotiable}
                                     value={price}

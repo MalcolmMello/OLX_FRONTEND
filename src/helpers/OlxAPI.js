@@ -135,10 +135,10 @@ const OlxAPI = {
         );
         return json;
     },
-    changeAd:async (state, title, category, price, priceNegotiable, description, images,id) => {
-        const json = await apiFetchFile(
+    changeAd:async (active, title, category, price, priceNegotiable, description, img, id) => {
+        const json = await apiFetchPost(
             `/ad/${id}`,
-            {state, title, category, price, priceNegotiable, description, images}
+            {active, title, category, price, priceNegotiable, description, img}
         )
         return json
     },
