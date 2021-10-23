@@ -9,7 +9,8 @@ export const Container = styled.div`
     bottom:0;
     background-color: rgba(0, 0, 0, 0.7);
     justify-content: center;
-    align-items: center
+    align-items: center;
+    padding:20px;
 `
 
 export const ModalBody = styled.div`

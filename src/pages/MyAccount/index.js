@@ -39,9 +39,8 @@ const Page = () => {
     const [priceNegotiable, setPriceNegotiable] = useState(false);
     const [desc, setDesc] = useState('');
     const [id, setId] = useState('')
+    const [active, setActive] = useState(false)
 
-
-    const [active, setActive] = useState(true)
     const [modalStatus, setModalStatus] = useState(false)
     const [modalProductsStatus, setModalProductsStatus] = useState(false)
 
@@ -85,19 +84,35 @@ const Page = () => {
         setDisabled(false)
     }
 
+    const handleDelete = () => {
+
+    }
+
     const handleSubmitProduct = async (e)=> {
         e.preventDefault();
         setDisabled(true);
         setError('');
-        const pic = []
-        for(let i=0;i<fileField.current.files.length;i++) {
-            pic.push(fileField.current.files[i]);
-        }
 
-        const json = await api.changeAd(active, title, category, price, priceNegotiable, desc, pic, id);
-        
+       
+            const otherData = new FormData();
+            otherData.append('status', !active);
+            otherData.append('title', title);
+            otherData.append('category', category);
+            otherData.append('price', price);
+            otherData.append('priceNegotiable', priceNegotiable);
+            otherData.append('desc', desc);
 
-        setDisabled(false);
+            if(fileField.current.files.length > 0) {
+                for(let i=0;i<fileField.current.files.length;i++) {
+                    otherData.append('img', fileField.current.files[i]);
+                }
+            }
+
+            const json = await api.changeAd(otherData, id);
+
+            
+
+            setDisabled(false);
     }
 
     return (
@@ -127,10 +142,11 @@ const Page = () => {
                             <div>
                                 {userLogged.ads.map((i,k)=>
                                     <div className="aditens">
-                                        <Img src={`http://alunos.b7web.com.br:501/media/${i.images.map((i,k)=>
-                                        i.url    
-                                        )}`
-                                        }/>
+                                        <div className="leftSide">
+                                            {i.images.map((i,k)=>
+                                                <Img key={k} src={`http://alunos.b7web.com.br:501/media/${i.url}`}/>
+                                            )}
+                                        </div>
                                         <div className="rightSide">
                                             <h1>{i.title}</h1>
                                             <p className="title">Descrição</p>
@@ -297,9 +313,31 @@ const Page = () => {
                             </div>
                         </label>
                         <label className="area">
+                            <div className="area--title">Desativar Anúncio</div>
+                            <div className="area--input">
+                                <input
+                                    className="boxx"
+                                    type="checkbox"
+                                    checked={active}
+                                    onChange={e=>setActive(!active)}
+                                />
+                            </div>
+                        </label>
+                        <label className="area">
+                            <div className="area--title">Ativar Anúncio</div>
+                            <div className="area--input">
+                                <input
+                                    className="boxx"
+                                    type="checkbox"
+                                    checked={active}
+                                    onChange={e=>setActive(active)}
+                                />
+                            </div>
+                        </label>
+                        <label className="area">
                             <div className="area--title"></div>
                             <div className="area--input">
-                                <button disabled={disabled} onClick={handleSubmitProduct}>Adicionar Anúncio</button>
+                                <button disabled={disabled} onClick={handleSubmitProduct}>Alterar dados do anúncio</button>
                             </div>
                         </label>
                     </form>

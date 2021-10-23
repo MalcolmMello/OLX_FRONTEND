@@ -7,7 +7,7 @@ const apiFetchFile = async (endpoint, body) => {
     if(!body.token) {
         let token = Cookies.get('token');
         if(token) {
-            body.append('token', token);
+            body.append('token', token)
         }
     }
     const res = await fetch(BASEAPI+endpoint, {
@@ -135,10 +135,10 @@ const OlxAPI = {
         );
         return json;
     },
-    changeAd:async (active, title, category, price, priceNegotiable, description, img, id) => {
-        const json = await apiFetchPost(
+    changeAd:async (otherData, id) => {
+        const json = await apiFetchFile(
             `/ad/${id}`,
-            {active, title, category, price, priceNegotiable, description, img}
+            otherData
         )
         return json
     },

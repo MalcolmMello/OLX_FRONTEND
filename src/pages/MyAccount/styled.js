@@ -19,6 +19,11 @@ export const PageArea = styled.div`
     button:hover {
         background-color:#E57706
     }
+    @media (max-width:600px) {
+        button {
+            width: 100%
+        }
+    }
 `
 
 export const Container = styled.div`
@@ -35,6 +40,15 @@ export const Container = styled.div`
         padding:20px 0px;
         border-bottom:1px solid #bbb
     }
+    .leftSide {
+        display:flex;
+        max-width:430px;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 5px;
+        border-radius: 5px;
+        background-color: #eee
+    }
     .rightSide {
         display:flex;
         flex-direction:column;
@@ -43,6 +57,20 @@ export const Container = styled.div`
         .title {
             margin:0;
             font-weight:bold
+        }
+    }
+    @media (max-width:600px) {
+        .leftSide {
+            max-width: 50%;
+            height: 50%;
+        }
+        .rightSide {
+            h1 {
+                font-size: 20px
+            }
+            p {
+                font-size: 14px
+            }
         }
     }
 `
@@ -66,9 +94,16 @@ export const Email = styled.div`
 `
 
 export const Img = styled.img`
-    width:300px;
-    height:300px;
-    border-radius:5px
+    width:200px;
+    height:200px;
+    border-radius:5px;
+    margin: 5px;
+    border: 1px solid #ccc;
+
+    @media (max-width:600px) {
+        width: 100px;
+        height: 100px;;
+    }
 `
 
 export const InputName = styled.input``
